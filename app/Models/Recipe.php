@@ -8,4 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class Recipe extends Model
 {
     use HasFactory;
+    protected $fillable = ['title', 'description', 'coocking_time', 'portions'];
+
+    public function step()
+    {
+        return $this->hasMany(Step::class);
+    }
+    public function ingredient()
+    {
+        return $this->hasMany(Ingredient::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
