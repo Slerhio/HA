@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ingridients', function (Blueprint $table) {
+        Schema::create('ingredients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recipe_id')->constrained('recipes')->onDelete('cascade');
             $table->string('name');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ingridients');
+        Schema::dropIfExists('ingredients');
     }
 };

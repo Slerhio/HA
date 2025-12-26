@@ -8,20 +8,31 @@ use Illuminate\Database\Eloquent\Model;
 class Recipe extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'description', 'coocking_time', 'portions'];
 
-    public function step()
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'title',
+        'description',
+        'cooking_time', // исправили
+        'portions',
+    ];
+
+    public function steps()
     {
         return $this->hasMany(Step::class);
     }
-    public function ingredient()
+
+    public function ingredients()
     {
         return $this->hasMany(Ingredient::class);
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

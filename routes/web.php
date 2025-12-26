@@ -1,6 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\StepController;
+use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +22,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
+Route::get('/recipe/create', [RecipeController::class,'create'])->name('recipes.create');
+Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');   
+Route::get('/recipes{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
