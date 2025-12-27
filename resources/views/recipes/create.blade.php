@@ -1,32 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create recipe</title>
-    {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
-</head>
-<body>
+@extends('layouts.app')
 
-<header>
-    <div class="container">
-        <h1>Create new recipe</h1>
-        <nav>
-            <a href="{{ route('recipes.index') }}">← Back to recipes</a>
-        </nav>
-    </div>
-</header>
+@section('title', 'Create recipe')
 
-<main>
-    <div class="container">
+@section('content')
+    <div class="card">
+        <h2>Create new recipe</h2>
 
-        {{-- сообщения об успехе --}}
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
         @endif
 
-        {{-- ошибки валидации --}}
         @if($errors->any())
             <div class="alert alert-danger">
                 <strong>There were some problems with your input:</strong>
@@ -38,22 +23,27 @@
             </div>
         @endif
 
-        <form action="{{ route('recipes.store') }}" method="POST">
+        <form action="{{ route('recipes.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="form-group">
-                <label for="title">Title*</label><br>
+                <label for="title">Title*</label>
                 <input type="text" name="title" id="title"
                        value="{{ old('title') }}" required>
             </div>
 
             <div class="form-group">
-                <label for="description">Description</label><br>
+                <label for="description">Description</label>
                 <textarea name="description" id="description" rows="4">{{ old('description') }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="image">Image (optional)</label>
+                <input type="file" name="image" id="image" accept="image/*">
             </div>
 
             <div class="form-group">
-                <label for="category_id">Category*</label><br>
+                <label for="category_id">Category*</label>
                 <select name="category_id" id="category_id" required>
                     <option value="">-- Select category --</option>
                     @foreach($categories as $category)
@@ -66,29 +56,20 @@
             </div>
 
             <div class="form-group">
-                <label for="cooking_time">Cooking time (minutes)</label><br>
+                <label for="cooking_time">Cooking time (minutes)</label>
                 <input type="number" name="cooking_time" id="cooking_time"
                        value="{{ old('cooking_time') }}" min="0">
             </div>
 
             <div class="form-group">
-                <label for="portions">Portions</label><br>
+                <label for="portions">Portions</label>
                 <input type="number" name="portions" id="portions"
                        value="{{ old('portions') }}" min="1">
             </div>
 
-            <div class="form-group" style="margin-top: 15px;">
-                <button type="submit">Save recipe</button>
-            </div>
+            <button type="submit" class="btn" style="margin-top: 8px;">
+                Save recipe
+            </button>
         </form>
     </div>
-</main>
-
-<footer>
-    <div class="container">
-        
-    </div>
-</footer>
-
-</body>
-</html>
+@endsection

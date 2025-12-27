@@ -14,8 +14,9 @@ class Recipe extends Model
         'category_id',
         'title',
         'description',
-        'cooking_time', // исправили
+        'cooking_time',
         'portions',
+        'image_path',
     ];
 
     public function steps()

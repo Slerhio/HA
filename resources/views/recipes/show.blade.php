@@ -1,92 +1,73 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ $recipe->title }} – Recipe App</title>
-    {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
-</head>
-<body>
+@extends('layouts.app')
 
-<header>
-    <div class="container">
-        <h1>{{ $recipe->title }}</h1>
-        <nav>
-            <a href="{{ route('recipes.index') }}">← Назад к списку</a>
-            |
-            <a href="{{ url('/') }}">На главную</a>
-        </nav>
-    </div>
-</header>
+@section('title', $recipe->title)
 
-<main>
-    <div class="container">
+@section('content')
+    <div class="card">
+        <h2>{{ $recipe->title }}</h2>
 
-        <section class="recipe-info">
+        @if($recipe->image_path)
+            <div style="margin: 10px 0;">
+                <img src="{{ asset('storage/' . $recipe->image_path) }}"
+                    alt="{{ $recipe->title }}"
+                    style="max-width: 100%; border-radius: 6px;">
+            </div>
+        @endif
+
+
+        <div class="recipe-meta">
             @if($recipe->category)
-                <p>Категория: <strong>{{ $recipe->category->name }}</strong></p>
+                Category: <strong>{{ $recipe->category->name }}</strong><br>
             @endif
 
             @if($recipe->user)
-                <p>Автор: <strong>{{ $recipe->user->name }}</strong></p>
+                Author: <strong>{{ $recipe->user->name }}</strong><br>
             @endif
 
             @if($recipe->cooking_time)
-                <p>Время приготовления: {{ $recipe->cooking_time }} мин</p>
+                Cooking time: {{ $recipe->cooking_time }} min<br>
             @endif
 
             @if($recipe->portions)
-                <p>Порций: {{ $recipe->portions }}</p>
+                Portions: {{ $recipe->portions }}
             @endif
+        </div>
 
-            @if($recipe->description)
-                <h3>Описание</h3>
-                <p>{{ $recipe->description }}</p>
-            @endif
-        </section>
-
-        <section class="recipe-ingredients">
-            <h3>Ингредиенты</h3>
-
-            @if($recipe->ingredients->isEmpty())
-                <p>Ингредиенты не указаны.</p>
-            @else
-                <ul>
-                    @foreach($recipe->ingredients as $ingredient)
-                        <li>
-                            {{ $ingredient->name }}
-                            @if($ingredient->quantity)
-                                – {{ $ingredient->quantity }}
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
-        </section>
-
-        <section class="recipe-steps">
-            <h3>Шаги приготовления</h3>
-
-            @if($recipe->steps->isEmpty())
-                <p>Шаги ещё не добавлены.</p>
-            @else
-                <ol>
-                    @foreach($recipe->steps->sortBy('step_number') as $step)
-                        <li>
-                            {{ $step->description }}
-                        </li>
-                    @endforeach
-                </ol>
-            @endif
-        </section>
-
+        @if($recipe->description)
+            <p>{{ $recipe->description }}</p>
+        @endif
     </div>
-</main>
 
-<footer>
-    <div class="container">
-        
+    <div class="card recipe-section">
+        <h3>Ingredients</h3>
+
+        @if($recipe->ingredients->isEmpty())
+            <p>No ingredients.</p>
+        @else
+            <ul>
+                @foreach($recipe->ingredients as $ingredient)
+                    <li>
+                        {{ $ingredient->name }}
+                        @if($ingredient->quantity)
+                            – {{ $ingredient->quantity }}
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        @endif
     </div>
-</footer>
 
-</body>
-</html>
+    <div class="card recipe-section">
+        <h3>Steps</h3>
+
+        @if($recipe->steps->isEmpty())
+            <p>No steps yet.</p>
+        @else
+            <ol>
+                @foreach($recipe->steps->sortBy('step_number') as $step)
+                    <li>{{ $step->description }}</li>
+                @endforeach
+            </ol>
+        @endif
+    </div>
+@endsection

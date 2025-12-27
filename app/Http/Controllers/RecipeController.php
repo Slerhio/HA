@@ -35,8 +35,17 @@ class RecipeController extends Controller
             'cooking_time' => 'nullable|integer|min:0',
             'portions'     => 'nullable|integer|min:1',
             'category_id'  => 'required|exists:categories,id',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);   
         $validated['user_id'] = 1;
+
+        if ($request->hasFile('image')) {
+        // сохранит в storage/app/public/recipes
+        $path = $request->file('image')->store('recipes', 'public');
+        $validated['image_path'] = $path;
+        }
+
+
         $recipe = Recipe::create($validated);
 
         return redirect()
