@@ -17,6 +17,7 @@
         <nav class="main-nav">
             <a href="{{ route('recipes.index') }}">Recipes</a>
             <a href="{{ route('recipes.create') }}">Create</a>
+            <a href="{{ route('recipes.discover') }}" class="btn btn-outline">What do I want today?</a>
         </nav>
     </div>
 </header>

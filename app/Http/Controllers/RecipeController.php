@@ -71,10 +71,8 @@ class RecipeController extends Controller
             'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        // user_id пока оставим как есть (не меняем)
         $validated['user_id'] = $recipe->user_id ?? 1;
 
-        // если загрузили новое изображение
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('recipes', 'public');
             $validated['image_path'] = $path;
@@ -92,5 +90,12 @@ class RecipeController extends Controller
         return redirect()
         ->route('recipes.index')
         ->with('success', 'Recipe deleted successfully!');
+    }
+    public function discover()
+    {
+    $recipes = Recipe::with('category')->inRandomOrder()->take(20)->get();
+    return view('recipes.discover', [
+        'recipes' => $recipes,
+    ]);
     }
 }
