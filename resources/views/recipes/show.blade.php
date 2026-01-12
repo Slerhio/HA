@@ -3,6 +3,27 @@
 @section('title', $recipe->title)
 
 @section('content')
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>{{ $recipe->title }}</h2>
+
+        <div>
+            <a href="{{ route('recipes.edit', $recipe->id) }}" class="btn btn-outline" style="margin-right: 8px;">
+                Edit
+            </a>
+
+            <form action="{{ route('recipes.delete', $recipe->id) }}"
+                  method="POST"
+                  style="display:inline"
+                  onsubmit="return confirm('Are you sure you want to delete this recipe?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn">
+                    Delete
+                </button>
+            </form>
+        </div>
+    </div>
     <div class="card">
         <h2>{{ $recipe->title }}</h2>
 

@@ -72,32 +72,45 @@ a:hover {
 
 /* Buttons */
 
-.btn {
-    display: inline-block;
+a.btn,
+button.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     padding: 8px 16px;
     border-radius: 4px;
     border: none;
-    background: #e63946;
-    color: #fff;
+
     font-size: 14px;
+    font-family: inherit;
+    line-height: 1;          /* важно для высоты */
     cursor: pointer;
     text-decoration: none;
+
+    background: #e63946;
+    color: #fff;
 }
 
-.btn:hover {
-    background: #c92d3a;
-    text-decoration: none;
-}
-
-.btn-outline {
+/* Обводка-версия */
+a.btn.btn-outline,
+button.btn.btn-outline {
     background: transparent;
     border: 1px solid #e63946;
     color: #e63946;
 }
 
-.btn-outline:hover {
+a.btn.btn-outline:hover,
+button.btn.btn-outline:hover {
     background: #e63946;
     color: #fff;
+}
+
+/* Ховер для обычной кнопки */
+a.btn:hover,
+button.btn:hover {
+    background: #c92d3a;
+    text-decoration: none;
 }
 
 /* Cards / blocks */

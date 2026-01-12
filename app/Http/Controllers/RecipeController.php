@@ -27,6 +27,12 @@ class RecipeController extends Controller
         $categories = Category::all();
         return view('recipes.create', compact('categories'));
     }
+    public function edit(Recipe $recipe)
+    {
+        $categories = Category::all();
+        return view('recipes.edit', compact('recipe','categories'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -51,5 +57,40 @@ class RecipeController extends Controller
         return redirect()
         ->route('recipes.show', $recipe->id)
         ->with('success','Recipe created successfully!');
+    }
+
+
+        public function update(Request $request, Recipe $recipe)
+    {
+        $validated = $request->validate([
+            'title'        => 'required|string|max:255',
+            'description'  => 'nullable|string',
+            'cooking_time' => 'nullable|integer|min:0',
+            'portions'     => 'nullable|integer|min:1',
+            'category_id'  => 'required|exists:categories,id',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        // user_id пока оставим как есть (не меняем)
+        $validated['user_id'] = $recipe->user_id ?? 1;
+
+        // если загрузили новое изображение
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('recipes', 'public');
+            $validated['image_path'] = $path;
+        }
+
+        $recipe->update($validated);
+
+        return redirect()
+            ->route('recipes.show', $recipe->id)
+            ->with('success', 'Recipe updated successfully!');
+    }
+    public function delete(Recipe $recipe)
+    {
+        $recipe->delete();
+        return redirect()
+        ->route('recipes.index')
+        ->with('success', 'Recipe deleted successfully!');
     }
 }
