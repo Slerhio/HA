@@ -67,6 +67,48 @@
                        value="{{ old('portions') }}" min="1">
             </div>
 
+            <div class="form-group">
+    <h3>Ingredients</h3>
+    <p style="font-size: 13px; color:#666;">Leave empty rows if you don't need them.</p>
+
+    @for ($i = 0; $i < 5; $i++)
+        <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+            <input
+                type="text"
+                name="ingredients[{{ $i }}][name]"
+                placeholder="Ingredient name (e.g. Eggs)"
+                style="flex: 2;"
+            >
+            <input
+                type="text"
+                name="ingredients[{{ $i }}][quantity]"
+                placeholder="Quantity (e.g. 2 pcs)"
+                style="flex: 1;"
+            >
+        </div>
+    @endfor
+</div>
+
+<div class="form-group">
+    <h3>Steps</h3>
+    <p style="font-size: 13px; color:#666;">Write step-by-step instructions.</p>
+
+    @for ($i = 0; $i < 5; $i++)
+        <div style="margin-bottom: 6px;">
+            <label style="font-size: 13px;">Step {{ $i + 1 }}</label>
+            <textarea
+                name="steps[{{ $i }}][description]"
+                rows="2"
+                placeholder="Describe what to do in this step"
+            ></textarea>
+        </div>
+    @endfor
+</div>
+
+<button type="submit" class="btn" style="margin-top: 8px;">
+    Save recipe
+</button>
+
             <button type="submit" class="btn" style="margin-top: 8px;">
                 Save recipe
             </button>
