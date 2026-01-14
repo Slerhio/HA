@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Recipe App')</title>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
@@ -17,6 +20,7 @@
         <nav class="main-nav">
             <a href="{{ route('recipes.index') }}">Recipes</a>
             <a href="{{ route('recipes.create') }}">Create</a>
+            <a href="{{ route('recipes.favorites') }}">Favorites</a>
             <a href="{{ route('recipes.discover') }}" class="btn btn-outline">What do I want today?</a>
         </nav>
     </div>

@@ -3,27 +3,63 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
+use App\Models\Favorite;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Step;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 
 class RecipeController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        // Получаем все рецепты с пользователем и категорией (если связь есть)
-        $recipes = Recipe::with(['user', 'category'])->get();
+        $userId = 1;
+        $query = Recipe::with(['user','category']);
 
-        return view('recipes.index', compact('recipes'));
-        // то же самое, что: ['recipes' => $recipes]
+        if ($request->filled('category_id'))
+            {
+                $query->where('category_id', $request->input('category_id'));
+            }
+
+        if ($request->filled('q'))
+            {
+                $search = $request->input('q');
+                $query->where('title', 'like', '%'.$search.'%');
+            }
+
+        if($request->boolean('only_favorites'))
+        {
+        $favoriteId = Favorite::where('user_id', $userId)->pluck('recipe_id');
+        $query->whereIn('id', $favoriteId);
+        }
+        $recipes = $query->get();
+        $categories = Category::all();
+        
+        return view('recipes.index', 
+        [
+        'recipes'    => $recipes,
+        'categories' => $categories,
+        'filters'    => $request->only(['category_id', 'q', 'only_favorites']),
+        ]);
     }
 
     public function show(Recipe $recipe)
     {
-    $recipe->load(['user', 'category','ingredients', 'steps']);
-    return view('recipes.show', compact('recipe'));
+     $recipe->load(['user', 'category', 'ingredients', 'steps']);
+
+    $userId = 1;
+
+    $isFavorite = Favorite::where('user_id', $userId)
+        ->where('recipe_id', $recipe->id)
+        ->exists();
+
+    return view('recipes.show', [
+        'recipe'     => $recipe,
+        'isFavorite' => $isFavorite,
+    ]);
+    //return view('recipes.show', compact('recipe'));
     }
     public function create()
     {
@@ -50,7 +86,6 @@ class RecipeController extends Controller
         $validated['user_id'] = 1;
 
         if ($request->hasFile('image')) {
-        // сохранит в storage/app/public/recipes
         $path = $request->file('image')->store('recipes', 'public');
         $validated['image_path'] = $path;
         }
@@ -58,14 +93,14 @@ class RecipeController extends Controller
 
         $recipe = Recipe::create($validated);
 
-        // --- ИНГРЕДИЕНТЫ ---
+
     $ingredients = $request->input('ingredients', []);
     foreach ($ingredients as $item) {
         $name = trim($item['name'] ?? '');
         $quantity = trim($item['quantity'] ?? '');
 
         if ($name === '') {
-            continue; // пропускаем пустые строки
+            continue;
         }
 
         Ingredient::create([
@@ -75,7 +110,6 @@ class RecipeController extends Controller
         ]);
     }
 
-    // --- ШАГИ ---
     $steps = $request->input('steps', []);
     $stepNumber = 1;
 
@@ -110,23 +144,15 @@ class RecipeController extends Controller
         'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
     ]);
 
-    // user_id не меняем (оставляем того же автора)
     $validated['user_id'] = $recipe->user_id ?? 1;
 
-    // обработка картинки
     if ($request->hasFile('image')) {
         $path = $request->file('image')->store('recipes', 'public');
         $validated['image_path'] = $path;
     }
 
-    // обновляем сам рецепт
     $recipe->update($validated);
-
-    // ---------- ИНГРЕДИЕНТЫ ----------
-    // сначала удаляем старые
     $recipe->ingredients()->delete();
-
-    // потом создаём новые из формы
     $ingredients = $request->input('ingredients', []);
 
     foreach ($ingredients as $item) {
@@ -144,7 +170,6 @@ class RecipeController extends Controller
         ]);
     }
 
-    // ---------- ШАГИ ----------
     $recipe->steps()->delete();
 
     $steps = $request->input('steps', []);
@@ -177,9 +202,50 @@ class RecipeController extends Controller
     }
     public function discover()
     {
-    $recipes = Recipe::with('category')->inRandomOrder()->take(20)->get();
-    return view('recipes.discover', [
-        'recipes' => $recipes,
-    ]);
+        $recipes = Recipe::with('category')->get();
+
+        return view('recipes.discover', compact('recipes'));
+    }
+
+    public function favorites()
+    {
+        $userId = 1;
+        $favorites = Favorite::with('recipe.category')
+        ->where('user_id', $userId)
+        ->get()
+        ->pluck('recipe')
+        ->filter();
+        return view('recipes.favorites',[
+            'recipes' => $favorites,
+        ]);
+    }
+    public function favorite(Request $request, Recipe $recipe)
+    {
+        $userId = 1; // временный пользователь
+
+        Favorite::firstOrCreate([
+            'user_id'   => $userId,
+            'recipe_id' => $recipe->id,
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['status' => 'ok']);
+        }
+        return back()->with('success', 'Recipe added to favorites!');
+    }
+
+    public function unfavorite(Request $request, Recipe $recipe)
+    {
+        $userId = 1;
+
+        Favorite::where('user_id', $userId)
+            ->where('recipe_id', $recipe->id)
+            ->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['status' => 'ok']);
+        }
+
+        return back()->with('success', 'Recipe removed from favorites!');
     }
 }

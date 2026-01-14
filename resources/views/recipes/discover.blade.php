@@ -1,56 +1,57 @@
 @extends('layouts.app')
 
-@section('title', 'What do I want today?')
+@section('title', 'Discover recipes')
 
 @section('content')
     <div class="card">
-        <h2 style="margin-bottom: 10px;">What do I want today?</h2>
-        <p style="margin-bottom: 10px;">
-            Click the button and swipe through random recipes.  
-            Left = dislike, right = like.
+        <h2>What do I want today?</h2>
+        <p>
+            Click the button below and I will show you a random recipe.
+            Swipe with your heart: like or dislike 😋
         </p>
 
-        <button id="startBtn" class="btn" style="margin-bottom: 12px;">
+        <button id="startBtn" class="btn" type="button">
             Show me something
         </button>
     </div>
 
     <div id="discoverArea" style="display:none;">
-        <div class="card" id="recipeCard">
-            <h2 id="recipeTitle"></h2>
+        <div class="card">
+            <h2 id="recipeTitle">Recipe title</h2>
 
-            <div id="recipeImageWrapper" style="margin: 10px 0; display: none;">
+            <div id="recipeImageWrapper" style="margin: 12px 0; display:none;">
                 <img id="recipeImage"
                      src=""
                      alt=""
-                     style="max-width: 100%; border-radius: 6px;">
+                     class="recipe-image-large discover-image">
             </div>
 
-            <div class="recipe-meta" id="recipeMeta"></div>
+            <div id="recipeMeta" class="recipe-meta" style="margin-bottom: 8px;"></div>
 
             <p id="recipeDescription"></p>
-        </div>
 
-        <div class="card" style="text-align: center;">
-            <p style="margin-bottom: 8px;">Do you like this one?</p>
-            <div style="display: flex; justify-content: center; gap: 16px;">
-                <button id="dislikeBtn" class="btn btn-outline">
-                    👈 Dislike
+            <div style="margin-top: 16px; display:flex; gap: 8px;">
+                <button id="dislikeBtn" type="button" class="btn btn-outline">
+                    👎 Dislike
                 </button>
-                <button id="likeBtn" class="btn">
-                    👉 Like
+                <button id="likeBtn" type="button" class="btn">
+                    👍 Like
                 </button>
             </div>
+
             <p id="statusText" style="margin-top: 10px; font-size: 14px; color: #666;"></p>
         </div>
     </div>
 
-    {{-- Передаём данные рецептов в JS --}}
     <script>
         const recipes = @json($recipes);
         let currentIndex = -1;
         const liked = [];
         const disliked = [];
+
+        // Аккуратно берём CSRF-токен, чтобы не упасть, если мета-тег вдруг отсутствует
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
 
         const startBtn = document.getElementById('startBtn');
         const discoverArea = document.getElementById('discoverArea');
@@ -66,7 +67,7 @@
         const statusText = document.getElementById('statusText');
 
         function showRecipe(index) {
-            if (!recipes.length) {
+            if (!recipes || !recipes.length) {
                 recipeTitle.textContent = 'No recipes available';
                 recipeDescription.textContent = '';
                 recipeImageWrapper.style.display = 'none';
@@ -88,16 +89,16 @@
             recipeTitle.textContent = r.title ?? 'Untitled';
             recipeDescription.textContent = r.description ?? '';
 
-            // картинка
             if (r.image_path) {
                 recipeImageWrapper.style.display = 'block';
-                recipeImage.src = '{{ asset('storage') }}/' + '/' + r.image_path;
+                recipeImage.src = '{{ asset('storage') }}/' + r.image_path;
                 recipeImage.alt = r.title ?? '';
             } else {
                 recipeImageWrapper.style.display = 'none';
+                recipeImage.src = '';
+                recipeImage.alt = '';
             }
 
-            // meta: категория + время + порции
             let metaParts = [];
             if (r.category && r.category.name) {
                 metaParts.push('Category: ' + r.category.name);
@@ -126,13 +127,10 @@
             }
 
             currentIndex++;
-            if (currentIndex < recipes.length) {
-                showRecipe(currentIndex);
-            } else {
-                showRecipe(currentIndex); // покажем сообщение "всё просмотрели"
-            }
+            showRecipe(currentIndex);
         }
 
+        // Кнопка "Show me something"
         startBtn?.addEventListener('click', function () {
             startBtn.style.display = 'none';
             discoverArea.style.display = 'block';
@@ -140,10 +138,33 @@
             showRecipe(currentIndex);
         });
 
+        // Like -> добавляем в избранное + следующй рецепт
         likeBtn?.addEventListener('click', function () {
-            nextRecipe('like');
+            if (!recipes || !recipes.length || currentIndex < 0 || currentIndex >= recipes.length) {
+                nextRecipe('like');
+                return;
+            }
+
+            const r = recipes[currentIndex];
+
+            fetch(`/recipes/${r.id}/favorite`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            }).then(response => {
+                // даже если сервер вернул ошибку, в консоли это будет видно
+                nextRecipe('like');
+            }).catch(error => {
+                console.error('Favorite error:', error);
+                nextRecipe('like');
+            });
         });
 
+        // Dislike -> просто следующий рецепт
         dislikeBtn?.addEventListener('click', function () {
             nextRecipe('dislike');
         });

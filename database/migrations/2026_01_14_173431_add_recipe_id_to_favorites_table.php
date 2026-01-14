@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('favorites', function (Blueprint $table) {
+            // добавляем поле recipe_id, если его нет
+            $table->foreignId('recipe_id')
+                ->after('user_id')
+                ->constrained('recipes')
+                ->onDelete('cascade');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('favorites', function (Blueprint $table) {
+            $table->dropForeign(['recipe_id']);
+            $table->dropColumn('recipe_id');
+        });
+    }
+};

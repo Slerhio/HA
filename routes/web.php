@@ -31,3 +31,6 @@ Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('r
 Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
 Route::delete('/recipes/{recipe}', [RecipeController::class, 'delete'])->name('recipes.delete');
 Route::get('/discover', [RecipeController::class, 'discover'])->name('recipes.discover');
+Route::get('/favorites', [RecipeController::class, 'favorites'])->name('recipes.favorites');
+Route::post('/recipes/{recipe}/favorite', [RecipeController::class, 'favorite'])->name('recipes.favorite');
+Route::delete('/recipes/{recipe}/favorite', [RecipeController::class, 'unfavorite'])->name('recipes.unfavorite');
