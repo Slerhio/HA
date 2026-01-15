@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('favorites', function (Blueprint $table) {
-            // добавляем поле recipe_id, если его нет
+
             $table->foreignId('recipe_id')
                 ->after('user_id')
                 ->constrained('recipes')

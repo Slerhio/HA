@@ -12,19 +12,19 @@ class InitialSeeder extends Seeder
 {
      public function run(): void
     {
-        // 1. User
+
         $userId = DB::table('users')->insertGetId([
             'name'         => 'John',
             'surname'      => 'Smith',
             'email'        => 'john@example.com',
             'phone_number' => '12345678',
-            'password'     => Hash::make('password'), // password: password
+            'password'     => Hash::make('password'),
             'role'         => 'user',
             'created_at'   => now(),
             'updated_at'   => now(),
         ]);
 
-        // 2. Categories
+
         $breakfastId = DB::table('categories')->insertGetId([
             'name'       => 'Breakfast',
             'created_at' => now(),
@@ -37,7 +37,6 @@ class InitialSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        // 3. Recipe 1: Cheese Omelette
         $recipe1Id = DB::table('recipes')->insertGetId([
             'user_id'      => $userId,
             'category_id'  => $breakfastId,
@@ -49,7 +48,6 @@ class InitialSeeder extends Seeder
             'updated_at'   => now(),
         ]);
 
-        // Ingredients for recipe 1
         DB::table('ingredients')->insert([
             [
                 'recipe_id'  => $recipe1Id,
@@ -74,7 +72,6 @@ class InitialSeeder extends Seeder
             ],
         ]);
 
-        // Steps for recipe 1
         DB::table('steps')->insert([
             [
                 'recipe_id'   => $recipe1Id,
@@ -99,7 +96,6 @@ class InitialSeeder extends Seeder
             ],
         ]);
 
-        // 4. Recipe 2: Pasta with Tomato Sauce
         $recipe2Id = DB::table('recipes')->insertGetId([
             'user_id'      => $userId,
             'category_id'  => $dinnerId,
@@ -111,7 +107,6 @@ class InitialSeeder extends Seeder
             'updated_at'   => now(),
         ]);
 
-        // Ingredients for recipe 2
         DB::table('ingredients')->insert([
             [
                 'recipe_id'  => $recipe2Id,
@@ -143,7 +138,6 @@ class InitialSeeder extends Seeder
             ],
         ]);
 
-        // Steps for recipe 2
         DB::table('steps')->insert([
             [
                 'recipe_id'   => $recipe2Id,

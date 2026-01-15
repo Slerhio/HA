@@ -38,4 +38,8 @@ class Recipe extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    public function favorites()
+    {
+        return $this->hasMany(\App\Models\Favorite::class);
+    }
 }

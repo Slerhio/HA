@@ -7,7 +7,7 @@
         <h2>What do I want today?</h2>
         <p>
             Click the button below and I will show you a random recipe.
-            Swipe with your heart: like or dislike 😋
+            Swipe with your heart: like or dislike
         </p>
 
         <button id="startBtn" class="btn" type="button">
@@ -49,7 +49,6 @@
         const liked = [];
         const disliked = [];
 
-        // Аккуратно берём CSRF-токен, чтобы не упасть, если мета-тег вдруг отсутствует
         const csrfMeta = document.querySelector('meta[name="csrf-token"]');
         const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
 
@@ -130,7 +129,6 @@
             showRecipe(currentIndex);
         }
 
-        // Кнопка "Show me something"
         startBtn?.addEventListener('click', function () {
             startBtn.style.display = 'none';
             discoverArea.style.display = 'block';
@@ -138,7 +136,6 @@
             showRecipe(currentIndex);
         });
 
-        // Like -> добавляем в избранное + следующй рецепт
         likeBtn?.addEventListener('click', function () {
             if (!recipes || !recipes.length || currentIndex < 0 || currentIndex >= recipes.length) {
                 nextRecipe('like');
@@ -156,7 +153,6 @@
                 },
                 body: JSON.stringify({}),
             }).then(response => {
-                // даже если сервер вернул ошибку, в консоли это будет видно
                 nextRecipe('like');
             }).catch(error => {
                 console.error('Favorite error:', error);
@@ -164,7 +160,6 @@
             });
         });
 
-        // Dislike -> просто следующий рецепт
         dislikeBtn?.addEventListener('click', function () {
             nextRecipe('dislike');
         });

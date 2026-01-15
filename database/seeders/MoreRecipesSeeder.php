@@ -14,7 +14,6 @@ class MoreRecipesSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Берём первого пользователя или создаём, если нет
         $user = User::first();
 
         if (!$user) {
@@ -28,7 +27,6 @@ class MoreRecipesSeeder extends Seeder
             ]);
         }
 
-        // 2. Создаём или находим категории
         $categories = [
             'Breakfast',
             'Lunch',
@@ -44,7 +42,6 @@ class MoreRecipesSeeder extends Seeder
             $categoryIds[$catName] = $cat->id;
         }
 
-        // 3. Набор рецептов с ингредиентами и шагами
         $recipesData = [
             [
                 'title'        => 'Classic Pancakes',
@@ -175,10 +172,9 @@ class MoreRecipesSeeder extends Seeder
                 'description'  => $data['description'],
                 'cooking_time' => $data['cooking_time'],
                 'portions'     => $data['portions'],
-                'image_path'   => null, // можно потом загрузить свои картинки
+                'image_path'   => null,
             ]);
 
-            // Ингредиенты
             foreach ($data['ingredients'] as $ing) {
                 Ingredient::create([
                     'recipe_id' => $recipe->id,
@@ -187,7 +183,6 @@ class MoreRecipesSeeder extends Seeder
                 ]);
             }
 
-            // Шаги
             $stepNumber = 1;
             foreach ($data['steps'] as $desc) {
                 Step::create([

@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class RecipeController extends Controller
 {
-    public function index(\Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $userId = 1;
         $query = Recipe::with(['user','category']);
@@ -59,7 +59,7 @@ class RecipeController extends Controller
         'recipe'     => $recipe,
         'isFavorite' => $isFavorite,
     ]);
-    //return view('recipes.show', compact('recipe'));
+
     }
     public function create()
     {

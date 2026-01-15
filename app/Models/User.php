@@ -14,4 +14,13 @@ class User extends Model
     {
         return $this->hasMany(Recipe::class);
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(\App\Models\Favorite::class);
+    }
+    public function favoriteRecipies()
+    {
+        return $this->belongsTo(\App\Models\Recipe::class, 'favorites');
+    }
 }
