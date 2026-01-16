@@ -3,14 +3,12 @@
 @section('title', 'Recipes')
 
 @section('content')
-    {{-- Форма фильтрации --}}
     <div class="card">
         <h2>Recipes</h2>
 
         <form action="{{ route('recipes.index') }}" method="GET"
               style="display:flex; flex-wrap:wrap; gap: 10px; align-items:flex-end;">
 
-            {{-- Поиск по названию --}}
             <div class="form-group">
                 <label for="q">Search</label>
                 <input type="text"
@@ -20,7 +18,6 @@
                        placeholder="Enter recipe name">
             </div>
 
-            {{-- Фильтр по категории --}}
             <div class="form-group">
                 <label for="category_id">Category</label>
                 <select name="category_id" id="category_id">
@@ -34,7 +31,6 @@
                 </select>
             </div>
 
-            {{-- Только избранные --}}
             <div class="form-group" style="display:flex; gap:6px; align-items:center; margin-top: 18px;">
                 <input type="checkbox"
                        name="only_favorites"
@@ -44,14 +40,12 @@
                 <label for="only_favorites">Only favorites</label>
             </div>
 
-            {{-- Кнопка применить --}}
             <div class="form-group">
                 <button type="submit" class="btn">
                     Apply filters
                 </button>
             </div>
 
-            {{-- Кнопка сброса фильтров --}}
             @if(!empty($filters['q']) || !empty($filters['category_id']) || !empty($filters['only_favorites']))
                 <div class="form-group">
                     <a href="{{ route('recipes.index') }}" class="btn btn-outline">

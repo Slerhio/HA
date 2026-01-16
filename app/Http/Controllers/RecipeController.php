@@ -8,7 +8,7 @@ use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Step;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Illuminate\Support\Facades\Http;
 
 
 class RecipeController extends Controller
@@ -31,8 +31,8 @@ class RecipeController extends Controller
 
         if($request->boolean('only_favorites'))
         {
-        $favoriteId = Favorite::where('user_id', $userId)->pluck('recipe_id');
-        $query->whereIn('id', $favoriteId);
+                $favoriteId = Favorite::where('user_id', $userId)->pluck('recipe_id');
+                $query->whereIn('id', $favoriteId);
         }
         $recipes = $query->get();
         $categories = Category::all();
@@ -56,7 +56,7 @@ class RecipeController extends Controller
         ->exists();
 
     return view('recipes.show', [
-        'recipe'     => $recipe,
+        'recipe' => $recipe,
         'isFavorite' => $isFavorite,
     ]);
 
@@ -74,7 +74,7 @@ class RecipeController extends Controller
     }
 
     public function store(Request $request)
-    {
+{
         $validated = $request->validate([
             'title'        => 'required|string|max:255',
             'description'  => 'nullable|string',
@@ -82,16 +82,37 @@ class RecipeController extends Controller
             'portions'     => 'nullable|integer|min:1',
             'category_id'  => 'required|exists:categories,id',
             'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);   
-        $validated['user_id'] = 1;
+        ]);
+    $title = $validated['title'] ?? null;
+    $apiWarning = null;
 
-        if ($request->hasFile('image')) {
+    if ($title) {
+        try {
+            $apiResponse = Http::get('https://www.themealdb.com/api/json/v1/1/search.php', ['s' => $title,]);
+                if ($apiResponse->successful()) {
+                    $data = $apiResponse->json();
+                    if (empty($data['meals'])) {
+                        $apiWarning = 'External recipe API (TheMealDB) could not find this dish name. '
+                                    . 'Your recipe will still be saved, but please make sure the name is correct.';
+                    }
+                }
+            } catch (\Exception $e) {
+        }
+    }
+
+    $validated['user_id'] = 1;
+
+     if ($request->hasFile('image')) {
         $path = $request->file('image')->store('recipes', 'public');
         $validated['image_path'] = $path;
-        }
+    }
 
+    $recipe = Recipe::create($validated);
 
-        $recipe = Recipe::create($validated);
+    if ($apiWarning) {
+        session()->flash('api_warning', $apiWarning);
+    }
+
 
 
     $ingredients = $request->input('ingredients', []);
@@ -221,7 +242,7 @@ class RecipeController extends Controller
     }
     public function favorite(Request $request, Recipe $recipe)
     {
-        $userId = 1; // временный пользователь
+        $userId = 1;
 
         Favorite::firstOrCreate([
             'user_id'   => $userId,

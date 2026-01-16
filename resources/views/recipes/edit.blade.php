@@ -75,9 +75,7 @@
                 <input type="file" name="image" id="image" accept="image/*">
             </div>
 
-            {{-- ===== INGREDIENTS ===== --}}
             @php
-                // Берём либо старые значения (если была ошибка валидации), либо текущие
                 $oldIngredients = old('ingredients', $recipe->ingredients->toArray());
                 $maxIngredients = max(count($oldIngredients), 5);
             @endphp
@@ -110,7 +108,6 @@
                 @endfor
             </div>
 
-            {{-- ===== STEPS ===== --}}
             @php
                 $sortedSteps = $recipe->steps->sortBy('step_number')->values();
                 $oldSteps = old('steps', $sortedSteps->toArray());

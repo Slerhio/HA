@@ -101,17 +101,13 @@
                 rows="2"
                 placeholder="Describe what to do in this step"
             ></textarea>
+            </div>
+            @endfor
         </div>
-    @endfor
-</div>
 
-<button type="submit" class="btn" style="margin-top: 8px;">
-    Save recipe
-</button>
-
-            <button type="submit" class="btn" style="margin-top: 8px;">
-                Save recipe
-            </button>
+        <button type="submit" class="btn" style="margin-top: 8px;">
+            Save recipe
+        </button>
         </form>
     </div>
 @endsection

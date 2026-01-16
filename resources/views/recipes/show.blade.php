@@ -3,12 +3,18 @@
 @section('title', $recipe->title)
 
 @section('content')
+@if(session('api_warning'))
+    <div class="api-warning">
+        <strong>Note:</strong><br>
+        {{ session('api_warning') }}
+    </div>
+@endif
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>{{ $recipe->title }}</h2>
 
+
             <div style="display: flex; gap: 8px; align-items: center;">
-                {{-- Избранное --}}
                 @if($isFavorite)
                     <form action="{{ route('recipes.unfavorite', $recipe->id) }}" method="POST" style="display:inline;">
                         @csrf
@@ -30,10 +36,8 @@
                     Edit
                 </a>
 
-                <form action="{{ route('recipes.delete', $recipe->id) }}"
-                      method="POST"
-                      style="display:inline"
-                      onsubmit="return confirm('Are you sure you want to delete this recipe?');">
+                <form action="{{ route('recipes.delete', $recipe->id) }}" method="POST" style="display:inline"
+                    onsubmit="return confirm('Are you sure you want to delete this recipe?');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn">
@@ -42,8 +46,6 @@
                 </form>
             </div>
         </div>
-
-        {{-- Категория и автор --}}
         <div class="recipe-meta" style="margin-top: 8px;">
             @if($recipe->category)
                 Category: {{ $recipe->category->name }}
@@ -55,21 +57,16 @@
             @endif
         </div>
 
-        {{-- Картинка --}}
         @if($recipe->image_path)
             <div style="margin: 16px 0;">
-                <img src="{{ asset('storage/' . $recipe->image_path) }}"
-                     alt="{{ $recipe->title }}"
-                     class="recipe-image-large">
+                <img src="{{ asset('storage/' . $recipe->image_path) }}" alt="{{ $recipe->title }}" class="recipe-image-large">
             </div>
         @endif
 
-        {{-- Описание --}}
         @if($recipe->description)
             <p>{{ $recipe->description }}</p>
         @endif
 
-        {{-- Время и порции --}}
         <div class="recipe-meta" style="margin-top: 8px;">
             @if($recipe->cooking_time)
                 Cooking time: {{ $recipe->cooking_time }} min
@@ -82,7 +79,6 @@
         </div>
     </div>
 
-    {{-- Ингредиенты --}}
     <div class="card">
         <h3>Ingredients</h3>
         @if($recipe->ingredients->isEmpty())
@@ -101,7 +97,6 @@
         @endif
     </div>
 
-    {{-- Шаги --}}
     <div class="card">
         <h3>Steps</h3>
         @if($recipe->steps->isEmpty())
