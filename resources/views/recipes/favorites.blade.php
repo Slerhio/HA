@@ -19,9 +19,8 @@
                         <div style="display: flex; gap: 16px; align-items: flex-start;">
                             @if($recipe->image_path)
                                 <div style="flex: 0 0 140px;">
-                                    <img src="{{ asset('storage/' . $recipe->image_path) }}"
-                                         alt="{{ $recipe->title }}"
-                                         class="recipe-thumb">
+                                    <img src="{{ asset('storage/' . $recipe->image_path) }}" alt="{{ $recipe->title }}"
+                                        class="recipe-thumb">
                                 </div>
                             @endif
 

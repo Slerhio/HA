@@ -20,10 +20,7 @@
             <h2 id="recipeTitle">Recipe title</h2>
 
             <div id="recipeImageWrapper" style="margin: 12px 0; display:none;">
-                <img id="recipeImage"
-                     src=""
-                     alt=""
-                     class="recipe-image-large discover-image">
+                <img id="recipeImage" src="" alt="" class="recipe-image-large discover-image">
             </div>
 
             <div id="recipeMeta" class="recipe-meta" style="margin-bottom: 8px;"></div>
